@@ -1,6 +1,6 @@
 services:
   hadoop:
-    image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4
+    image: bde2020/hadoop-namenode:latest
     container_name: hadoop
     ports:
       - "9870:9870" # Web UI NameNode
