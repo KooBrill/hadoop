@@ -9,8 +9,8 @@ services:
     environment:
       - CLUSTER_NAME=test
     ports:
-      - "9870:9870"  # <-- Web UI NameNode (Monitoring)
-      - "9000:9000"  # <-- Port HDFS
+      - "9870:9870"
+      - "9000:9000"
     
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
@@ -29,7 +29,7 @@ services:
       - namenode
       - datanode
     ports:
-      - "8088:8088"  # <-- Web UI ResourceManager (Monitoring Job)
+      - "8088:8088"
 
   nodemanager:
     image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
@@ -49,12 +49,12 @@ services:
       - datanode
       - resourcemanager
     ports:
-      - "19888:19888" # <-- Web UI History Server (Monitoring Job Selesai)
+      - "19888:19888"
     environment:
       - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
 
   hue:
-    image: bde2020/hue:3.0.0-hadoop3.2.1-java8
+    image: bde2020/hadoop-hue:2.0.0-hadoop3.2.1-java8  # <-- INI YANG SAYA PERBAIKI
     container_name: hue
     depends_on:
       - namenode
@@ -62,7 +62,7 @@ services:
       - resourcemanager
       - historyserver
     ports:
-      - "8888:8888"  # <-- INI YANG KAMU CARI (Web UI HUE)
+      - "8888:8888"
     environment:
       - HADOOP_NAMENODE_HOST=namenode
       - HADOOP_RESOURCEMANAGER_HOST=resourcemanager
