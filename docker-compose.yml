@@ -11,7 +11,7 @@ services:
     ports:
       - "9870:9870"
       - "9000:9000"
-    
+      
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode
@@ -21,8 +21,8 @@ services:
       - hadoop_datanode:/hadoop/dfs/data
     environment:
       - SERVICE_PRECONDITION=namenode:9870
-      
- resourcemanager:
+        
+  resourcemanager:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
     container_name: resourcemanager
     depends_on:
@@ -31,7 +31,7 @@ services:
     ports:
       - "8088:8088"
     environment:
-      - SERVICE_PRECONDITION=namenode:9870  # <-- TAMBAHKAN INI
+      - SERVICE_PRECONDITION=namenode:9870 # <-- Perubahan Anda sudah benar
 
   nodemanager:
     image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
@@ -41,7 +41,7 @@ services:
       - datanode
       - resourcemanager
     environment:
-      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- Ini sudah benar
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- Perubahan Anda sudah benar
 
   historyserver:
     image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
@@ -53,7 +53,7 @@ services:
     ports:
       - "19888:19888"
     environment:
-      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- TAMBAHKAN INI
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- Perubahan Anda sudah benar
 
   hue:
     image: gethue/hue:latest
@@ -66,8 +66,8 @@ services:
     environment:
       - HADOOP_NAMENODE_HOST=namenode
       - HADOOP_RESOURCEMANAGER_HOST=resourcemanager
-      - HUE_SECRET_KEY=gantidenganpasswordacakyangpanjang
-      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- TAMBAHKAN INI
+      - HUE_SECRET_KEY=gantidenganpasswordacakyangpanjang # <-- GANTI INI
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- Perubahan Anda sudah benar
 
 volumes:
   hadoop_namenode:
