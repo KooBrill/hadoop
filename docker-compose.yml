@@ -54,19 +54,18 @@ services:
       - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
 
   hue:
-    image: bde2020/hue:latest  # <-- SAYA GANTI INI
+    image: gethue/hue:latest  # <-- INI IMAGE YANG BENAR (RESMI DARI HUE)
     container_name: hue
     depends_on:
       - namenode
-      - datanode
       - resourcemanager
-      - historyserver
     ports:
       - "8888:8888"
     environment:
       - HADOOP_NAMENODE_HOST=namenode
       - HADOOP_RESOURCEMANAGER_HOST=resourcemanager
-      - HIVE_HISTORYSERVER_HOST=historyserver
+      # Ini akan pakai database SQLite bawaan (cukup untuk tes)
+      - HUE_SECRET_KEY=gantidenganpasswordacakyangpanjang
 
 volumes:
   hadoop_namenode:
