@@ -54,7 +54,7 @@ services:
       - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
 
   hue:
-    image: bde2020/hadoop-hue:2.0.0-hadoop3.2.1-java8  # <-- INI YANG SAYA PERBAIKI
+    image: bde2020/hue:latest  # <-- SAYA GANTI INI
     container_name: hue
     depends_on:
       - namenode
