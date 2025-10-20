@@ -1,28 +1,4 @@
-version: "3"
-
-services:
-  namenode:
-    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
-    container_name: namenode
-    volumes:
-      - hadoop_namenode:/hadoop/dfs/name
-    environment:
-      - CLUSTER_NAME=test
-    ports:
-      - "9870:9870"
-      - "9000:9000"
-    
-  datanode:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
-    container_name: datanode
-    depends_on:
-      - namenode
-    volumes:
-      - hadoop_datanode:/hadoop/dfs/data
-    environment:
-      - SERVICE_PRECONDITION=namenode:9870
-      
-  resourcemanager:
+resourcemanager:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
     container_name: resourcemanager
     depends_on:
@@ -30,6 +6,8 @@ services:
       - datanode
     ports:
       - "8088:8088"
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870  # <-- TAMBAHKAN INI
 
   nodemanager:
     image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
@@ -39,8 +17,8 @@ services:
       - datanode
       - resourcemanager
     environment:
-      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
-      
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- Ini sudah benar
+
   historyserver:
     image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
     container_name: historyserver
@@ -51,10 +29,10 @@ services:
     ports:
       - "19888:19888"
     environment:
-      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- TAMBAHKAN INI
 
   hue:
-    image: gethue/hue:latest  # <-- INI IMAGE YANG BENAR (RESMI DARI HUE)
+    image: gethue/hue:latest
     container_name: hue
     depends_on:
       - namenode
@@ -64,9 +42,5 @@ services:
     environment:
       - HADOOP_NAMENODE_HOST=namenode
       - HADOOP_RESOURCEMANAGER_HOST=resourcemanager
-      # Ini akan pakai database SQLite bawaan (cukup untuk tes)
       - HUE_SECRET_KEY=gantidenganpasswordacakyangpanjang
-
-volumes:
-  hadoop_namenode:
-  hadoop_datanode:
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- TAMBAHKAN INI
