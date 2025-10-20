@@ -1,9 +1,73 @@
+version: "3"
+
 services:
-  hadoop:
-    image: bde2020/hadoop-namenode:latest
-    container_name: hadoop
-    ports:
-      - "9870:9870" # Web UI NameNode
-      - "9000:9000" # HDFS
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
+    ports:
+      - "9870:9870"  # <-- Web UI NameNode (Monitoring)
+      - "9000:9000"  # <-- Port HDFS
+    
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    depends_on:
+      - namenode
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+      
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    depends_on:
+      - namenode
+      - datanode
+    ports:
+      - "8088:8088"  # <-- Web UI ResourceManager (Monitoring Job)
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    depends_on:
+      - namenode
+      - datanode
+      - resourcemanager
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
+      
+  historyserver:
+    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
+    container_name: historyserver
+    depends_on:
+      - namenode
+      - datanode
+      - resourcemanager
+    ports:
+      - "19888:19888" # <-- Web UI History Server (Monitoring Job Selesai)
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088
+
+  hue:
+    image: bde2020/hue:3.0.0-hadoop3.2.1-java8
+    container_name: hue
+    depends_on:
+      - namenode
+      - datanode
+      - resourcemanager
+      - historyserver
+    ports:
+      - "8888:8888"  # <-- INI YANG KAMU CARI (Web UI HUE)
+    environment:
+      - HADOOP_NAMENODE_HOST=namenode
+      - HADOOP_RESOURCEMANAGER_HOST=resourcemanager
+      - HIVE_HISTORYSERVER_HOST=historyserver
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
