@@ -1,4 +1,28 @@
-resourcemanager:
+version: "3"
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    depends_on:
+      - namenode
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+      
+ resourcemanager:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
     container_name: resourcemanager
     depends_on:
@@ -44,3 +68,7 @@ resourcemanager:
       - HADOOP_RESOURCEMANAGER_HOST=resourcemanager
       - HUE_SECRET_KEY=gantidenganpasswordacakyangpanjang
       - SERVICE_PRECONDITION=namenode:9870 resourcemanager:8088 # <-- TAMBAHKAN INI
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
